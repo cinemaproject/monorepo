@@ -1,4 +1,4 @@
-name: Linux Post Commit Checks
+name: Default Pipeline 
 
 on:
   push:
@@ -6,17 +6,14 @@ on:
     - main
   pull_request:
     branches:
-    - sycl
+    - main 
 jobs:
    check:
      runs-on: ubuntu-latest
-
      steps:
      - uses: actions/checkout@v2
      - name: Test Backend
-       shell: cd backend && make test
+       run: cd backend && make test
      - name: Update Images
        if: ${{ github.event_name == 'push' }}
-       #     shell: make push
-       shell: echo "TODO push docker images"
-
+       run: echo "TODO push docker images"
