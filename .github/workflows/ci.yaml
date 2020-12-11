@@ -1,4 +1,4 @@
-name: Linux Post Commit Checks
+name: Default Pipeline 
 
 on:
   push:
