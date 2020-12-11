@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    ports:
+      - "5000:5000"
+    environment:
+      BACKEND_IMG_PATH: images
+      BACKEND_DB_URL: "postgresql://postgres:testpwd@backend_toydb_1/postgres" 
+    depends_on:
+      - toydb
+  toydb:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.toydb
+    environment:
+      POSTGRES_PASSWORD: "testpwd"
+    ports:
+      - "5432:5432"

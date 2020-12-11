@@ -1,0 +1,1 @@
+INSERT INTO relations VALUES ('t000000001', 'nm000000000001', 'actor');
