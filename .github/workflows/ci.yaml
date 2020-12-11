@@ -6,7 +6,7 @@ on:
     - main
   pull_request:
     branches:
-    - sycl
+    - main 
 jobs:
    check:
      runs-on: ubuntu-latest
