@@ -1,0 +1,17 @@
+.demo {
+    margin-bottom: 24px;
+    border-radius: 1px;
+    overflow: hidden;
+    border: 1px solid #565656;
+}
+.film-description {
+    margin: 15px;
+}
+
+.canegory {
+    font-size: smaller;
+}
+
+.film-header {
+
+}
