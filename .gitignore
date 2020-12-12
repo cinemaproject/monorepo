@@ -131,3 +131,5 @@ dmypy.json
 junit
 
 .DS_Store
+
+node_modules
