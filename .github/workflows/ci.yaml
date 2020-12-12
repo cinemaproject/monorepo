@@ -24,9 +24,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         # scikit-image requires that
-        pip install --upgrade --upgrade-strategy eager wheel numpy -e .
-        pip install --upgrade --upgrade-strategy eager -r backend/requirements.txt -e .
-        pip install --upgrade --upgrade-strategy eager -r backend/requirements-dev.txt -e .
+        pip install --upgrade --upgrade-strategy eager wheel numpy
+        pip install --upgrade --upgrade-strategy eager -r backend/requirements.txt
+        pip install --upgrade --upgrade-strategy eager -r backend/requirements-dev.txt
     - name: Test Backend
       run: cd backend && ./test.sh
     - name: Update Images
