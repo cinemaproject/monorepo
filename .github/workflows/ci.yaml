@@ -13,7 +13,7 @@ jobs:
      steps:
      - uses: actions/checkout@v2
      - name: Test Backend
-       run: cd backend && make test
+       run: cd backend && ./test.sh
      - name: Update Images
        if: ${{ github.event_name == 'push' }}
        run: echo "TODO push docker images"
