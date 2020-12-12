@@ -1,7 +1,3 @@
-from sqlalchemy.ext.declarative import DeclarativeMeta
-import json
-
-
 def get_film_id(id):
     """Pad film ID to be 10 characters in length"""
     return "{:<10}".format(str(id))
