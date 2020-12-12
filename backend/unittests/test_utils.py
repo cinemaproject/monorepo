@@ -1,12 +1,11 @@
 from app import utils
-import unittest
 
 
-class TestUtils(unittest.TestCase):
-    def test_get_film_id(self):
+def test_get_film_id():
         res = utils.get_film_id('t01')
-        self.assertEqual(len(res), 10)
+        assert len(res) == 10
 
-    def test_get_film_id(self):
-        res = utils.get_person_id('nm0001')
-        self.assertEqual(len(res), 14)
+
+def test_get_person_id():
+        res = utils.get_person_id('nm01')
+        assert len(res) == 14
