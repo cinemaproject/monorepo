@@ -17,6 +17,8 @@ build:
       - 'templates'
       - 'keys_dict.json'
       - 'requirements.txt'
+  - image: cinematic/frontend
+    context: frontend_new
   - image: toydb
     context: toydb
 deploy:
@@ -24,6 +26,7 @@ deploy:
     manifests:
     - 'toydb/k8s-*.yaml'
     - 'backend/k8s/*.yaml'
+    - 'frontend_new/k8s/*.yaml'
 profiles:
   - name: dev
     activation:
