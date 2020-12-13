@@ -1,5 +1,5 @@
 import About from "../../build/rendered_views/About.js";
-import SuccessBackendMock from "../utils/SuccessBackendMock.js";
+import SuccessBackendMock from "../../app/SuccessBackendMock.js";
 
 const assert = require('assert');
 

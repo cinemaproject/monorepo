@@ -1,5 +1,5 @@
 import Film from "../../build/rendered_views/Film.js";
-import SuccessBackendMock from "../utils/SuccessBackendMock.js";
+import SuccessBackendMock from "../../app/SuccessBackendMock.js";
 
 const assert = require('assert');
 
