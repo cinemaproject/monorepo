@@ -1,13 +1,15 @@
 export default class AbstractView {
-  constructor(params) {
-      this.params = params;
-  }
+    constructor(backendService, params, document) {
+        this.backendService = backendService;
+        this.params = params;
+        this.document = document;
+    }
 
-  setTitle(title) {
-      document.title = title;
-  }
+    setTitle(title) {
+        this.document.title = title;
+    }
 
-  async getHtml() {
-      return "";
-  }
+    async getHtml() {
+        return "";
+    }
 }

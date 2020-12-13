@@ -1,9 +1,9 @@
 import AbstractView from "./AbstractView.js";
 
 export default class About extends AbstractView {
-    constructor(params) {
-        super(params);
-        this.setTitle("Dashboard");
+    constructor(backendService, params, document) {
+        super(backendService, params, document);
+        this.setTitle("About us");
     }
 
     async getHtml() {

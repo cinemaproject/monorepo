@@ -1,3 +1,4 @@
+import Backend from "./Backend.js";
 import Home from "./views/Home.js";
 import About from "./views/About.js";
 
@@ -40,7 +41,7 @@ const router = async () => {
         };
     }
 
-    const view = new match.route.view(getParams(match));
+    const view = new match.route.view(new Backend(), getParams(match));
 
     document.querySelector("#app").innerHTML = await view.getHtml();
 };

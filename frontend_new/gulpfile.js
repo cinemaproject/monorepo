@@ -53,8 +53,8 @@ const defaultPipeline = series(
   deploy
 );
 
-exports.default = defaultPipeline;
-exports.serve = series(
+module.exports.default = defaultPipeline;
+module.exports.serve = series(
   defaultPipeline,
   serve
 ); 

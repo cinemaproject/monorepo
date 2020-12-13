@@ -4,15 +4,21 @@
   "description": "https://gulpjs.com/docs/en/getting-started/quick-start",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx gulp && npx mocha --recursive unittests"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
+    "@babel/preset-env": "^7.12.10",
     "browser-sync": "^2.26.13",
+    "chai": "^4.2.0",
     "gulp": "^4.0.2",
     "gulp-concat-css": "^3.1.0",
     "gulp-copy": "^4.0.1",
-    "gulp-inject-template": "^0.2.2"
+    "gulp-inject-template": "^0.2.2",
+    "mocha": "^8.2.1"
   }
 }
