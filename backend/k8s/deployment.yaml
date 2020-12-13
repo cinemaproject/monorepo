@@ -19,5 +19,11 @@ spec:
         resources:
           limits:
             cpu: "150m"
-            memory: "256Mi"
+            memory: "1Gi"
+        env:
+        - name: BACKEND_IMG_PATH
+          value: images # todo this must go to PVC
+        - name: BACKEND_DB_URL
+          value: "postgresql://postgres:testpwd@toydb/postgres"
+
       restartPolicy: Always
