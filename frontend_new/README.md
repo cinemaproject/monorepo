@@ -11,3 +11,9 @@ cd monorepo/frontend_new
 npm install # Only if new modules have been added to package.json
 npx gulp serve
 ```
+
+5. Running tests:
+```sh
+cd monorepo/frontend_new
+npm test
+```
