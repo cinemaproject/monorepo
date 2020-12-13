@@ -8,14 +8,15 @@ on:
     branches:
     - main 
 jobs:
-  check:
+  check_backend:
+    name: "Check backend"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements-dev.txt') }}
+        key: ${{ hashFiles('backend/requirements.txt') }}-${{ hashFiles('backend/requirements-dev.txt') }}
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
@@ -29,6 +30,17 @@ jobs:
         pip install --upgrade --upgrade-strategy eager -r backend/requirements-dev.txt
     - name: Test Backend
       run: cd backend && ./test.sh
+  check_integration:
+    name: "Check components integration"
+    runs-on: ubuntu-latest
+    needs: [check_backend]
+    steps:
+    - name: Login to DockerHub
+      uses: docker/login-action@v1 
+      if: ${{ github.event_name == 'push' }}
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Update Images
       if: ${{ github.event_name == 'push' }}
-      run: echo "TODO push docker images"
+      run: skaffold build --profile=prod

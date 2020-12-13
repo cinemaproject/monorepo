@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: 'cinematic/backend'
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: "150m"
+            memory: "1Gi"
+        env:
+        - name: BACKEND_IMG_PATH
+          value: images # todo this must go to PVC
+        - name: BACKEND_DB_URL
+          value: "postgresql://postgres:testpwd@toydb/postgres"
+
+      restartPolicy: Always

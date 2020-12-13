@@ -1,0 +1,40 @@
+apiVersion: skaffold/v2beta10
+kind: Config
+metadata:
+  name: cinematic-monorepo
+build:
+  tagPolicy:
+    gitCommit: {}
+  artifacts:
+  - image: cinematic/backend
+    context: backend
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      infer:
+      - 'app'
+      - 'static'
+      - 'templates'
+      - 'keys_dict.json'
+      - 'requirements.txt'
+  - image: toydb
+    context: toydb
+deploy:
+  kubectl:
+    manifests:
+    - 'toydb/k8s-*.yaml'
+    - 'backend/k8s/*.yaml'
+profiles:
+  - name: dev
+    activation:
+      - command: dev
+    portForward:
+    - resourceType: service
+      resourceName: backend
+      namespace: default
+      port: 5000
+      localPort: 5000
+  - name: prod
+    patches:
+    - op: remove
+      path: /build/artifacts/1
