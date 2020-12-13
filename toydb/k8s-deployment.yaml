@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toydb
+spec:
+  selector:
+    matchLabels:
+      app: toydb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: toydb 
+    spec:
+      containers:
+      - name: postgres 
+        image: 'toydb'
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: "150m"
+            memory: "256Mi"
+        env:
+        - name: POSTGRES_PASSWORD
+          value: testpwd
+      restartPolicy: Always
+
