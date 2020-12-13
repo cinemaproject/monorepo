@@ -6,7 +6,7 @@ metadata:
     app: backend
 spec:
   ports:
-    - name: endpoints
+    - name: http
       protocol: TCP
       port: 5000
       targetPort: 5000
