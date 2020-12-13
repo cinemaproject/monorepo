@@ -48,8 +48,8 @@ jobs:
         restore-keys: |
           ${{ runner.OS }}-node-
           ${{ runner.OS }}-
-    - run: npm install
-    - run: npm test
+    - run: cd frontend_new && npm install
+    - run: cd frontend_new && npm test
   check_integration:
     name: "Check components integration"
     runs-on: ubuntu-latest
