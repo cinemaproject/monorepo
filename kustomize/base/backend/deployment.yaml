@@ -24,6 +24,8 @@ spec:
         - name: BACKEND_IMG_PATH
           value: images # todo this must go to PVC
         - name: BACKEND_DB_URL
-          value: "postgresql://postgres:testpwd@toydb/postgres"
-
+          valueFrom:
+            secretKeyRef:
+              name: backend-db-url
+              key: url
       restartPolicy: Always
