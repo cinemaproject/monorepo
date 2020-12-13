@@ -29,7 +29,11 @@ jobs:
         pip install --upgrade --upgrade-strategy eager -r backend/requirements.txt
         pip install --upgrade --upgrade-strategy eager -r backend/requirements-dev.txt
     - name: Test Backend
-      run: cd backend && ./test.sh
+      run: cd backend && ./test.sh > pytest-coverage.txt
+    - name: Comment coverage
+      uses: coroo/pytest-coverage-commentator@v1.0.2
+      with:
+        pytest-coverage: backend/pytest-coverage.txt
   check_integration:
     name: "Check components integration"
     runs-on: ubuntu-latest
