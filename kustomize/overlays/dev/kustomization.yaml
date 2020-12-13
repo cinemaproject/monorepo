@@ -1,0 +1,7 @@
+namespace: cinematic
+bases:
+- ../../base
+
+resources:
+- secret.yaml
+- namespace.yaml

@@ -21,22 +21,17 @@ build:
     context: frontend_new
   - image: toydb
     context: toydb
-deploy:
-  kubectl:
-    manifests:
-    - 'toydb/k8s-*.yaml'
-    - 'backend/k8s/*.yaml'
 profiles:
   - name: dev
     activation:
       - command: dev
-    portForward:
-    - resourceType: service
-      resourceName: backend
-      namespace: default
-      port: 5000
-      localPort: 5000
+    deploy:
+      kustomize:
+        paths: ["kustomize/overlays/dev"]
   - name: prod
     patches:
     - op: remove
       path: /build/artifacts/1
+    deploy:
+      kustomize:
+        paths: ["kustomize/overlays/prod"]
