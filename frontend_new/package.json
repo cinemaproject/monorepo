@@ -19,6 +19,7 @@
     "gulp-concat-css": "^3.1.0",
     "gulp-copy": "^4.0.1",
     "gulp-inject-template": "^0.2.2",
+    "gulp-preprocess": "^3.0.3",
     "mocha": "^8.2.1"
   }
 }

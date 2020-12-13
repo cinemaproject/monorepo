@@ -3,10 +3,11 @@ const injectTemplate = require('gulp-inject-template');
 const concatCss = require('gulp-concat-css');
 const copy = require('gulp-copy');
 const browserSync = require('browser-sync').create();
+const preprocess = require("gulp-preprocess");
 
 function render_templates() {
   return src('views/**/*.js', { buffer: false })
-    .pipe(injectTemplate({variable: 'parameters'}))
+    .pipe(injectTemplate({ variable: 'parameters' }))
     .pipe(dest('./build/rendered_views/'));
 }
 
@@ -24,8 +25,12 @@ function deployCSS() {
   return src('./build/styles/main.css').pipe(copy('./dist/static/css/', { prefix: 2 }));
 }
 
-function deployJS() {
-  return src('./app/main.js').pipe(copy('./dist/static/js/', { prefix: 1 }));
+function deployJS(isDebug) {
+  return () => {
+    return src('./app/*.js')
+      .pipe(preprocess({ context: { DEBUG: isDebug, PRODUCTION: !isDebug } }))
+      .pipe(dest('./dist/static/js/'));
+  }
 }
 
 function deployHTML() {
@@ -46,15 +51,21 @@ function serve(cb) {
 
 const cssPipeline = series(compile_css);
 const jsPipeline = series(render_templates);
-const deploy = series(deployCSS, deployJS, deployViewJS, deployHTML, deployImages);
+const deploy = function (isDebug) {
+  return series(deployCSS, deployJS(isDebug), deployViewJS, deployHTML, deployImages);
+}
 
-const defaultPipeline = series(
-  parallel(cssPipeline, jsPipeline),
-  deploy
-);
+function defaultPipeline(isDebug) {
+  return series(
+    parallel(cssPipeline, jsPipeline),
+    deploy(isDebug)
+  );
+}
 
-module.exports.default = defaultPipeline;
+console.log(defaultPipeline(false));
+
+module.exports.default = defaultPipeline(false);
 module.exports.serve = series(
-  defaultPipeline,
+  defaultPipeline(true),
   serve
 ); 

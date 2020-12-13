@@ -26,7 +26,6 @@ deploy:
     manifests:
     - 'toydb/k8s-*.yaml'
     - 'backend/k8s/*.yaml'
-    - 'frontend_new/k8s/*.yaml'
 profiles:
   - name: dev
     activation:

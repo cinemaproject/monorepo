@@ -1,4 +1,4 @@
-import AbstractBackend from "../../app/AbstractBackend.js";
+import AbstractBackend from "./AbstractBackend.js";
 
 export default class SuccessBackendMock extends AbstractBackend {
   async getFilm(filmId) {

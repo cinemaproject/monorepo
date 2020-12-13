@@ -1,8 +1,15 @@
 import Backend from "./Backend.js";
 import Home from "./views/Home.js";
 import About from "./views/About.js";
+import Film from "./views/Film.js";
+// @if DEBUG=true
+import SuccessBackendMock from './SuccessBackendMock.js'
+// @endif
 
-const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+const pathToRegex = path => {
+    console.log(path);
+    return new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+}
 
 const getParams = match => {
     const values = match.result.slice(1);
@@ -20,15 +27,16 @@ const navigateTo = url => {
 
 const router = async () => {
     const routes = [
-        { path: "/", view: Home },
-        { path: "/about", view: About }
+        { path: "#", view: Home },
+        { path: "#/about", view: About },
+        { path: "#/film/:id", view: Film}
     ];
 
     // Test each route for potential match
     const potentialMatches = routes.map(route => {
         return {
             route: route,
-            result: location.pathname.match(pathToRegex(route.path))
+            result: location.hash.match(pathToRegex(route.path))
         };
     });
 
@@ -41,7 +49,13 @@ const router = async () => {
         };
     }
 
-    const view = new match.route.view(new Backend(), getParams(match));
+    let view = null;
+    // @if DEBUG=true
+    view = new match.route.view(new SuccessBackendMock(), getParams(match), document);
+    // @endif
+    // @if PRODUCTION=true
+    view = new match.route.view(new Backend(window.location.hostname), getParams(match), document);
+    // @endif 
 
     document.querySelector("#app").innerHTML = await view.getHtml();
 };
