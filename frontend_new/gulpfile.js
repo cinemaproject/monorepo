@@ -21,7 +21,7 @@ function deployViewJS() {
 }
 
 function deployCSS() {
-  return src('./styles/main.css').pipe(copy('./dist/static/css/', { prefix: 1 }));
+  return src('./build/styles/main.css').pipe(copy('./dist/static/css/', { prefix: 2 }));
 }
 
 function deployJS() {
@@ -30,6 +30,10 @@ function deployJS() {
 
 function deployHTML() {
   return src('./index.html').pipe(copy('./dist/'));
+}
+
+function deployImages() {
+  return src(['./images/*.png', './images/*.jpg']).pipe(copy('./dist/static'));
 }
 
 function serve(cb) {
@@ -42,7 +46,7 @@ function serve(cb) {
 
 const cssPipeline = series(compile_css);
 const jsPipeline = series(render_templates);
-const deploy = series(deployCSS, deployJS, deployViewJS, deployHTML);
+const deploy = series(deployCSS, deployJS, deployViewJS, deployHTML, deployImages);
 
 const defaultPipeline = series(
   parallel(cssPipeline, jsPipeline),
