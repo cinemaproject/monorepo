@@ -29,7 +29,7 @@ searcher = face_searcher()
 app = Flask(__name__)
 
 
-@app.route("/images/<path:path>")
+@app.route("/api/images/<path:path>")
 @cross_origin()
 def images(path):
     print(path)
@@ -43,7 +43,7 @@ def url_to_image(url):
     return image
 
 
-@app.route("/people/search")
+@app.route("/api/people/search")
 @cross_origin()
 def search_people():
     name = request.args.get("name")
@@ -52,7 +52,7 @@ def search_people():
     return json.dumps(result)
 
 
-@app.route("/people/<id>")
+@app.route("/api/people/<id>")
 @cross_origin()
 def get_person(id):
     person = resultproxy_to_dict(items.get_person_by_id(id))
@@ -61,7 +61,7 @@ def get_person(id):
     return json.dumps(result)
 
 
-@app.route("/films/search")
+@app.route("/api/films/search")
 @cross_origin()
 def search_films():
     title = request.args.get("title")
@@ -70,7 +70,7 @@ def search_films():
     return json.dumps(result)
 
 
-@app.route("/films/<id>")
+@app.route("/api/films/<id>")
 @cross_origin()
 def get_film_info(id):
     film = resultproxy_to_dict(items.get_film_by_id(id))
@@ -79,7 +79,7 @@ def get_film_info(id):
     return json.dumps(result)
 
 
-@app.route("/actors_recognition", methods=["POST"])
+@app.route("/api/actors_recognition", methods=["POST"])
 @cross_origin()
 def recognize_actors():
     image_undecoded = request.get_data()

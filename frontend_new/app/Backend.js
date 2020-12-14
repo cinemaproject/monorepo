@@ -3,7 +3,7 @@ import AbstractBackend from './AbstractBackend.js'
 export default class Backend extends AbstractBackend {
   constructor(hostname) {
     super();
-    this.baseURL = hostname + "/api/";
+    this.baseURL = "/api/";
   }
 
   async __doRequest(method, endpoint, parameters) {

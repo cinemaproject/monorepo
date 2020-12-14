@@ -18,8 +18,8 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           limits:
-            cpu: "150m"
-            memory: "1Gi"
+            cpu: "1500m"
+            memory: "4Gi"
         env:
         - name: BACKEND_IMG_PATH
           value: images # todo this must go to PVC
