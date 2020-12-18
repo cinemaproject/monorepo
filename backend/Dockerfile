@@ -1,4 +1,4 @@
-FROM clearlinux/python
+FROM clearlinux/python:3.8.2
 
 RUN mkdir -p /workspace
 WORKDIR /workspace
