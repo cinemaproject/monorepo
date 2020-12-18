@@ -22,7 +22,7 @@ MarkupSafe==1.1.1
 matplotlib==3.3.2
 mxnet==1.6.0
 networkx==2.5
-numpy==1.19.2
+numpy
 Pillow==8.0.1
 psycopg2-binary==2.8.6
 pyparsing==2.4.7
