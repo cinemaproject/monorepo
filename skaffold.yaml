@@ -17,6 +17,8 @@ build:
       - 'templates'
       - 'keys_dict.json'
       - 'requirements.txt'
+  - image: cinematic/frontend
+    context: frontend_new
   - image: toydb
     context: toydb
 profiles:

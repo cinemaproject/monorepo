@@ -1,6 +1,8 @@
 resources:
 - backend-deployment.yaml
-- backend-ingress.yaml
 - backend-service.yaml
+- frontend-deployment.yaml
+- frontend-service.yaml
 - toydb-deployment.yaml
 - toydb-service.yaml
+- ingress.yaml
