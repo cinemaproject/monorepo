@@ -12,6 +12,7 @@ COPY requirements.txt ./
 
 RUN swupd bundle-add opencv-python
 RUN pip install --upgrade pip
+RUN pip install wheel numpy
 RUN pip install -r requirements.txt
 
 CMD ["python", "/workspace/app/main.py"]
