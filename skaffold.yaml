@@ -6,6 +6,8 @@ build:
   tagPolicy:
     gitCommit: {}
   artifacts:
+  - image: toydb
+    context: toydb
   - image: cinematic/backend
     context: backend
     docker:
@@ -19,8 +21,6 @@ build:
       - 'requirements.txt'
   - image: cinematic/frontend
     context: frontend_new
-  - image: toydb
-    context: toydb
 profiles:
   - name: dev
     activation:
@@ -31,7 +31,7 @@ profiles:
   - name: prod
     patches:
     - op: remove
-      path: /build/artifacts/1
+      path: /build/artifacts/0
     deploy:
       kustomize:
         paths: ["kustomize/overlays/prod"]
