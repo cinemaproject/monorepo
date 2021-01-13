@@ -3,8 +3,9 @@ import config
 import sqlalchemy
 from sqlalchemy import MetaData
 
-instance = sqlalchemy.create_engine(config.postgres_url, connect_args={
-                                    'connect_timeout': 100000})
+instance = sqlalchemy.create_engine(
+    config.postgres_url, connect_args={"connect_timeout": 100000}
+)
 
 
 def connect(max_retries, retry_count=0):
