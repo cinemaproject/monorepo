@@ -15,8 +15,14 @@ build:
     sync:
       infer:
       - 'app'
-      - 'static'
-      - 'templates'
+      - 'requirements.txt'
+  - image: cinematic/model_server
+    context: model_server
+    docker:
+      dockerfile: Dockerfile
+    sync:
+      infer:
+      - 'app'
       - 'keys_dict.json'
       - 'requirements.txt'
   - image: cinematic/frontend
