@@ -4,8 +4,6 @@ RUN mkdir -p /workspace
 WORKDIR /workspace
 
 ADD app ./app
-ADD static ./static
-ADD templates ./templates
 COPY requirements.txt ./
 
 RUN pip install --upgrade pip
