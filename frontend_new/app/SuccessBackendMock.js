@@ -14,6 +14,7 @@ export default class SuccessBackendMock extends AbstractBackend {
         "imdb_id": "tt000000001"
       },
       "people": [{
+        "id": 1,
         "primary_name": "John Doe",
         "photo_url": "http://example.com",
         "birth_year": 1985,
