@@ -1,1 +1,1 @@
-INSERT INTO films VALUES ('t000000001', 'Sample Film', 'movie', 2019, NULL, 100);
+INSERT INTO films VALUES (1, 'Sample Film', 'sample_url', 'movie', 2019, 0, 100, 't000000001');

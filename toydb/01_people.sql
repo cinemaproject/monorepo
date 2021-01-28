@@ -1,13 +1,12 @@
 create table people
 (
-	id integer not null
+	id serial not null
 		constraint people_pk
-			AUTO_INCREMENT
 			primary key,
 	primary_name varchar(255) not null,
 	photo_url varchar(255),
-	birth_year integer,
-	death_year integer,
+	birth_year integer not null,
+	death_year integer not null,
 	imdb_id varchar(255)
 );
 
