@@ -17,7 +17,7 @@ jobs:
       with:
         go-version: '^1.15.0'
     - name: Test Backend
-      run: cd backend && go test -coverprofile=backend_coverage.out ./...
+      run: cd backend && go test -v -coverprofile=backend_coverage.out ./...
     - name: Render coverage report
       run: cd backend && go tool cover -html=backend_coverage.out -o backend.html
     - uses: actions/upload-artifact@v2
