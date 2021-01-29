@@ -61,7 +61,7 @@ jobs:
     - name: Build Images
       run: skaffold build --profile=dev
     - name: Deploy containers to kubernetes
-      run: skaffold deploy --profile=dev
+      run: skaffold run --profile=dev
     - name: Run Selenium integration tests
       run: |
         export BASE_URL="http://$(minikube ip)/"
