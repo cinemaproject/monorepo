@@ -3,28 +3,30 @@ package pkg
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/cinematic/monorepo/backend/pkg/model"
+
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jmoiron/sqlx"
 	"testing"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/cinematic/monorepo/backend/pkg/model"
+	"github.com/jmoiron/sqlx"
 )
 
 var DefaultFilmsRow = []string{"id", "title", "poster_url", "type", "start_year", "end_year", "runtime_minutes", "imdb_id"}
 var DefaultPeopleRow = []string{"id", "primary_name", "photo_url", "birth_year", "death_year", "imdb_id"}
 
 const (
-	ExpectPersonById = iota
+	ExpectPersonById   = iota
 	ExpectPersonByName = iota
-	ExpectFilmsById = iota
+	ExpectFilmsById    = iota
 	ExpectFilmsByTitle = iota
 )
 
-func _getTestServer(expected int) (*httptest.Server, *sql.DB, error) {
+func _getTestServer() (*httptest.Server, *sql.DB, error) {
 	mockDB, mock, err := sqlmock.New()
 	if err != nil {
 		return nil, nil, err
@@ -32,17 +34,37 @@ func _getTestServer(expected int) (*httptest.Server, *sql.DB, error) {
 
 	db := sqlx.NewDb(mockDB, "sqlmock")
 
-	peopleRow := mock.NewRows(DefaultPeopleRow).AddRow(1, "John Doe", "", 1980, 0, "nm00001")
-	filmsRow := mock.NewRows(DefaultFilmsRow).AddRow(1, "Test", "", "movie", 2015, 0, 100, "tt00001")
-	if expected == ExpectPersonById {
-		mock.ExpectQuery("^SELECT (.+) FROM people WHERE id=(.+)$").WithArgs(1).WillReturnRows(peopleRow)
-	} else if expected == ExpectPersonByName {
-		mock.ExpectQuery("^SELECT (.+) FROM people WHERE lower(.+)$").WithArgs("John").WillReturnRows(peopleRow)
-	} else if expected == ExpectFilmsByTitle {
-		mock.ExpectQuery("^SELECT (.+) FROM films WHERE (.+)$").WithArgs("Test").WillReturnRows(filmsRow)
-	} else if expected == ExpectFilmsById {
-		mock.ExpectQuery("^SELECT (.+) FROM films WHERE id=(.+)$").WithArgs(1).WillReturnRows(filmsRow)
-	}
+	//////////////////////////////////////////////////////////////////////////////
+	// Set up mock queries
+	//////////////////////////////////////////////////////////////////////////////
+
+	// Request person with correct ID
+	mock.ExpectQuery("^SELECT (.+) FROM people WHERE id=(.+)$").WithArgs(1).WillReturnRows(mock.NewRows(
+		DefaultPeopleRow).AddRow(1, "John Doe", "", 1980, 0, "nm00001"))
+	mock.ExpectQuery("^SELECT (.+) FROM films WHERE id IN (.+)$").WithArgs(1).WillReturnRows(mock.NewRows(DefaultFilmsRow).AddRow(1, "Test", "", "movie", 2015, 0, 100, "tt00001"))
+
+	// Request person with missing ID
+	mock.ExpectQuery("^SELECT (.+) FROM people WHERE id=(.+)$").WithArgs(2).WillReturnRows(mock.NewRows(DefaultPeopleRow))
+
+	// Request film with correct ID
+	mock.ExpectQuery("^SELECT (.+) FROM films WHERE id=(.+)$").WithArgs(1).WillReturnRows(mock.NewRows(DefaultFilmsRow).AddRow(1, "Test", "", "movie", 2015, 0, 100, "tt00001"))
+	mock.ExpectQuery("^SELECT (.+) FROM people WHERE id IN (.+)$").WithArgs(1).WillReturnRows(mock.NewRows(DefaultPeopleRow).AddRow(1, "John Doe", "", 1980, 0, "nm00001"))
+
+	// Find person by name
+	mock.ExpectQuery("^SELECT (.+) FROM people WHERE lower(.+)$").WithArgs("John").WillReturnRows(mock.NewRows(DefaultPeopleRow).AddRow(1, "John Doe", "", 1980, 0, "nm00001"))
+
+	// Find person by missing name
+	mock.ExpectQuery("^SELECT (.+) FROM people WHERE lower(.+)$").WithArgs("Jack").WillReturnRows(mock.NewRows(DefaultPeopleRow))
+
+	// Find films by title
+	mock.ExpectQuery("^SELECT (.+) FROM films WHERE lower(.+)$").WithArgs("Star").WillReturnRows(
+		mock.NewRows(DefaultFilmsRow).
+			AddRow(1, "Star Wars Episode 1", "", "movie", 1980, 0, 100, "tt00001").
+			AddRow(2, "Star Wars Episode 2", "", "movie", 1980, 0, 100, "tt00001").
+			AddRow(3, "Star Trek", "", "movie", 1980, 0, 100, "tt00001"))
+
+	// Request film with missing ID
+	mock.ExpectQuery("^SELECT (.+) FROM films WHERE lower(.+)$").WithArgs("Avengers").WillReturnRows(mock.NewRows(DefaultFilmsRow))
 
 	router := InitializeRouter(db)
 	ts := httptest.NewServer(router)
@@ -50,7 +72,7 @@ func _getTestServer(expected int) (*httptest.Server, *sql.DB, error) {
 	return ts, mockDB, nil
 }
 
-func _generateRequest(t *testing.T, method, url string, body io.Reader) *http.Request {
+func generateRequest(t *testing.T, method, url string, body io.Reader) *http.Request {
 	r, err := http.NewRequest(method, url, body)
 	if err != nil {
 		t.Fatal(err)
@@ -59,164 +81,131 @@ func _generateRequest(t *testing.T, method, url string, body io.Reader) *http.Re
 	return r
 }
 
-func TestGetPersonByIdRequest(t *testing.T) {
-	// Arrange
-	ts, db, err := _getTestServer(ExpectPersonById)
+type TestCheckType = func(*testing.T, []byte)
+
+type TestCase struct {
+	Name   string
+	Req    *http.Request
+	Verify TestCheckType
+}
+
+func verifyPersonWithID(t *testing.T, bodyBytes []byte) {
+	var person PersonWithFilms
+	err := json.Unmarshal(bodyBytes, &person)
 	if err != nil {
-		t.Fatalf("Unexpected error %s", err)
+		bodyStr := string(bodyBytes)
+		t.Fatalf("Failed to parse json: %s\n Body: %s", err, bodyStr)
 	}
-	defer ts.Close()
-	defer db.Close()
-
-	req := _generateRequest(t, "GET", ts.URL + "/api/people/1", nil)
-
-	// Act
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatalf("Failed to execute query. %s", err)
-	}
-	if resp == nil || resp.Body == nil {
-		t.Fatal("Response is empty")
-	}
-	defer resp.Body.Close()
-
-	// Assert
-	if resp.StatusCode == http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			t.Fatalf("Failed to parse body: %s", err)
-		}
-		var person PersonWithFilms
-		err = json.Unmarshal(bodyBytes, &person)
-		if err != nil {
-			bodyStr := string(bodyBytes)
-			t.Fatalf("Failed to parse json: %s\n Body: %s", err, bodyStr)
-		}
-		if person.Person.ID != 1 {
-			t.Errorf("Incorrect person id. Expected 1, got %d", person.Person.ID)
-		}
-	} else {
-		t.Fatalf("Failed to execute query. Status is %s", resp.Status)
+	if person.Person.ID != 1 {
+		t.Errorf("Incorrect person id. Expected 1, got %d", person.Person.ID)
 	}
 }
 
-func TestFindPeopleByNameRequest(t *testing.T) {
-	ts, db, err := _getTestServer(ExpectPersonByName)
-	if err != nil {
-		t.Fatalf("Unexpected error %s", err)
-	}
-	defer ts.Close()
-	defer db.Close()
-
-	req := _generateRequest(t, "GET", ts.URL + "/api/people/search?name=John", nil)
-
-	// Act
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatalf("Failed to execute query. %s", err)
-	}
-	if resp == nil || resp.Body == nil {
-		t.Fatal("Response is empty")
-	}
-	defer resp.Body.Close()
-
-	// Assert
-	if resp.StatusCode == http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			t.Fatalf("Failed to parse body: %s", err)
-		}
+func verifyPeopleArray(length int) TestCheckType {
+	return func(t *testing.T, bodyBytes []byte) {
 		var people []model.Person
-		err = json.Unmarshal(bodyBytes, &people)
+		err := json.Unmarshal(bodyBytes, &people)
 		if err != nil {
 			bodyStr := string(bodyBytes)
 			t.Fatalf("Failed to parse json: %s\n Body: %s", err, bodyStr)
 		}
-		if len(people) != 1 {
-			t.Errorf("Incorrect number of people. Expected 1, got %d", len(people))
+		if len(people) != length {
+			t.Errorf("Incorrect number of people. Expected %d, got %d", length, len(people))
 		}
-	} else {
-		t.Fatalf("Failed to execute query. Status is %s", resp.Status)
 	}
 }
 
-func TestFindFilmsByTitleRequest(t *testing.T) {
-	ts, db, err := _getTestServer(ExpectFilmsByTitle)
-	if err != nil {
-		t.Fatalf("Unexpected error %s", err)
-	}
-	defer ts.Close()
-	defer db.Close()
-
-	req := _generateRequest(t, "GET", ts.URL + "/api/films/search?title=Test", nil)
-
-	// Act
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatalf("Failed to execute query. %s", err)
-	}
-	if resp == nil || resp.Body == nil {
-		t.Fatal("Response is empty")
-	}
-	defer resp.Body.Close()
-
-	// Assert
-	if resp.StatusCode == http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			t.Fatalf("Failed to parse body: %s", err)
-		}
+func verifyFilmsArray(length int) TestCheckType {
+	return func(t *testing.T, bodyBytes []byte) {
 		var films []model.Film
-		err = json.Unmarshal(bodyBytes, &films)
+		err := json.Unmarshal(bodyBytes, &films)
 		if err != nil {
 			bodyStr := string(bodyBytes)
 			t.Fatalf("Failed to parse json: %s\n Body: %s", err, bodyStr)
 		}
-		if len(films) != 1 {
-			t.Errorf("Incorrect number of films. Expected 1, got %d", len(films))
+		if len(films) != length {
+			t.Errorf("Incorrect number of people. Expected %d, got %d", length, len(films))
 		}
-	} else {
-		t.Fatalf("Failed to execute query. Status is %s", resp.Status)
 	}
 }
 
-func TestGetFilmByIdRequest(t *testing.T) {
+func verifySmthMissing(t *testing.T, bodyBytes []byte) {
+	var reqErr RequestError
+	err := json.Unmarshal(bodyBytes, &reqErr)
+	if err != nil {
+		bodyStr := string(bodyBytes)
+		t.Fatalf("Failed to parse json: %s\nBody: %s", err, bodyStr)
+	}
+	if reqErr.ErrorCode != 404 {
+		t.Errorf("Incorrect error code. Expected 404, got %d", reqErr.ErrorCode)
+	}
+}
+
+func verifySmthIncorrect(t *testing.T, bodyBytes []byte) {
+	var reqErr RequestError
+	err := json.Unmarshal(bodyBytes, &reqErr)
+	if err != nil {
+		bodyStr := string(bodyBytes)
+		t.Fatalf("Failed to parse json: %s\nBody: %s", err, bodyStr)
+	}
+	if reqErr.ErrorCode != 400 {
+		t.Errorf("Incorrect error code. Expected 400, got %d", reqErr.ErrorCode)
+	}
+}
+
+func verifyFilmWithID(t *testing.T, bodyBytes []byte) {
+	var film FilmWithPeople
+	err := json.Unmarshal(bodyBytes, &film)
+	if err != nil {
+		bodyStr := string(bodyBytes)
+		t.Fatalf("Failed to parse json: %s\n Body: %s", err, bodyStr)
+	}
+	if film.Film.ID != 1 {
+		t.Errorf("Incorrect film id. Expected 1, got %d", film.Film.ID)
+	}
+}
+
+func TestServerRequests(t *testing.T) {
 	// Arrange
-	ts, db, err := _getTestServer(ExpectFilmsById)
+	ts, db, err := _getTestServer()
 	if err != nil {
 		t.Fatalf("Unexpected error %s", err)
 	}
 	defer ts.Close()
 	defer db.Close()
 
-	req := _generateRequest(t, "GET", ts.URL + "/api/films/1", nil)
-
-	// Act
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		t.Fatalf("Failed to execute query. %s", err)
+	// Describe test cases
+	tests := []TestCase{
+		{"Request person with ID", generateRequest(t, "GET", ts.URL+"/api/people/1", nil), verifyPersonWithID},
+		{"Request person with missing ID", generateRequest(t, "GET", ts.URL+"/api/people/2", nil), verifySmthMissing},
+		{"Request person with incorrect ID", generateRequest(t, "GET", ts.URL+"/api/people/foo", nil), verifySmthIncorrect},
+		{"Request film with ID", generateRequest(t, "GET", ts.URL+"/api/films/1", nil), verifyFilmWithID},
+		{"Request film with missing ID", generateRequest(t, "GET", ts.URL+"/api/films/2", nil), verifySmthMissing},
+		{"Request film with incorrect ID", generateRequest(t, "GET", ts.URL+"/api/films/foo", nil), verifySmthIncorrect},
+		{"Find person by name", generateRequest(t, "GET", ts.URL+"/api/people/search?name=John", nil), verifyPeopleArray(1)},
+		{"Find person by missing name", generateRequest(t, "GET", ts.URL+"/api/people/search?name=Jack", nil), verifyPeopleArray(0)},
+		{"Find person incorrect request", generateRequest(t, "GET", ts.URL+"/api/people/search", nil), verifySmthIncorrect},
+		{"Find films by title", generateRequest(t, "GET", ts.URL+"/api/films/search?title=Star", nil), verifyFilmsArray(3)},
+		{"Find films by missing title", generateRequest(t, "GET", ts.URL+"/api/films/search?title=Avengers", nil), verifyFilmsArray(0)},
+		{"Find films incorrect request", generateRequest(t, "GET", ts.URL+"/api/films/search", nil), verifySmthIncorrect},
 	}
-	if resp == nil || resp.Body == nil {
-		t.Fatal("Response is empty")
-	}
-	defer resp.Body.Close()
 
-	// Assert
-	if resp.StatusCode == http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			t.Fatalf("Failed to parse body: %s", err)
-		}
-		var film FilmWithPeople
-		err = json.Unmarshal(bodyBytes, &film)
-		if err != nil {
-			bodyStr := string(bodyBytes)
-			t.Fatalf("Failed to parse json: %s\n Body: %s", err, bodyStr)
-		}
-		if film.Film.ID != 1 {
-			t.Errorf("Incorrect person id. Expected 1, got %d", film.Film.ID)
-		}
-	} else {
-		t.Fatalf("Failed to execute query. Status is %s", resp.Status)
+	for _, tstCase := range tests {
+		t.Run(tstCase.Name, func(t *testing.T) {
+			// Act
+			resp, _ := http.DefaultClient.Do(tstCase.Req)
+			if resp == nil || resp.Body == nil {
+				t.Fatal("Response is empty")
+			}
+			defer resp.Body.Close()
+
+			bodyBytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				t.Fatalf("Failed to parse body: %s", err)
+			}
+
+			// Assert
+			tstCase.Verify(t, bodyBytes)
+		})
 	}
 }
