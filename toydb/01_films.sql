@@ -1,13 +1,15 @@
 create table films
 (
-	id char(10) not null
+	id serial not null
 		constraint films_pk
 			primary key,
 	title varchar(255),
+	poster_url varchar(255),
 	type varchar(255),
-	start_year integer,
-	end_year integer,
-	runtime_minutes integer
+	start_year integer not null,
+	end_year integer not null,
+	runtime_minutes integer not null,
+	imdb_id varchar(255)
 );
 
 alter table films owner to postgres;

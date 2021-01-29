@@ -1,12 +1,13 @@
 create table people
 (
-	id char(14) not null
+	id serial not null
 		constraint people_pk
 			primary key,
 	primary_name varchar(255) not null,
 	photo_url varchar(255),
-	birth_year integer,
-	death_year integer
+	birth_year integer not null,
+	death_year integer not null,
+	imdb_id varchar(255)
 );
 
 alter table people owner to postgres;
