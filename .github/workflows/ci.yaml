@@ -67,7 +67,8 @@ jobs:
         export BASE_URL="http://$(minikube ip)/"
         cd tests/selenium
         npm install
-        npm test
+        BROWSER=firefox npm test
+        BROWSER=chrome npm test
     - name: Cleanup
       run: skaffold delete --profile=dev
   push_docker:
