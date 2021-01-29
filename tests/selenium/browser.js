@@ -7,12 +7,19 @@ module.exports.createBrowser = async () => {
     case "chrome": {
       require("chromedriver");
       capabilities = webdriver.Capabilities.chrome();
+      var args = [
+        "--headless",
+        "--disable-gpu",
+        "--window-size=1980,1200"
+      ];
+
+      if (process.platform == "linux") {
+        args.push("--no-sandbox")
+        args.push("--disable-dev-shm-usage")
+      }
+
       capabilities.set("chromeOptions", {
-        args: [
-          "--headless",
-          "--disable-gpu",
-          "--window-size=1980,1200"
-        ]
+        args: args
       });
       break;
     }
