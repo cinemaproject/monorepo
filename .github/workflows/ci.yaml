@@ -66,6 +66,7 @@ jobs:
       run: |
         export BASE_URL="http://$(minikube ip)/"
         cd tests/selenium
+        npm install
         npm test
     - name: Cleanup
       run: skaffold delete --profile=dev
