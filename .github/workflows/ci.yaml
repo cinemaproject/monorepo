@@ -50,6 +50,7 @@ jobs:
     needs: [check_backend, check_frontend]
     steps:
     - uses: actions/checkout@v1
+    - run: sudo apt-get install google-chrome-stable
     - name: Setup Minikube
       run: minikube start --addons=registry --addons=ingress
     - name: Get Skaffold

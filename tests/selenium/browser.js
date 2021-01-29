@@ -10,7 +10,6 @@ module.exports.createBrowser = async () => {
       capabilities.set("chromeOptions", {
         args: [
           "--headless",
-          "--no-sandbox",
           "--disable-gpu",
           "--window-size=1980,1200"
         ]
@@ -33,7 +32,7 @@ module.exports.createBrowser = async () => {
   try {
     instance = await new webdriver.Builder()
       .forBrowser(browser)
-      // .withCapabilities(capabilities)
+      .withCapabilities(capabilities)
       .build();
   } catch (err) {
     console.error(err);
