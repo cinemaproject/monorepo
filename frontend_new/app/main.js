@@ -8,7 +8,6 @@ import SuccessBackendMock from './SuccessBackendMock.js'
 // @endif
 
 const pathToRegex = path => {
-    console.log(path);
     return new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 }
 
@@ -74,8 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("global-search-btn").onclick = e => {
         e.preventDefault();
-        navigateTo("/#/search/"
-            + document.getElementById("global-search-query").value);
+        const query = document.getElementById("global-search-query").value;
+        if (query != "" && query != null && query != undefined) {
+            navigateTo("/#/search/" + query);
+        }
     }
 
     router();

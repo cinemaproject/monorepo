@@ -38,4 +38,17 @@ export default class SuccessBackendMock extends AbstractBackend {
       }
     ]
   }
+
+  async searchPeople(name) {
+    return [
+      {
+        "id": 1,
+        "primary_name": "John Doe",
+        "photo_url": "http://example.com",
+        "birth_year": 1985,
+        "death_year": 0,
+        "imdb_id": "nm000000000001"
+      }
+    ]
+  }
 }
