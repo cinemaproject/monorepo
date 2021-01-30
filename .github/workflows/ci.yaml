@@ -49,13 +49,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-11.0]
+        os: [ubuntu-20.04, macos-latest]
     runs-on: ${{ matrix.os }}
     needs: [check_backend, check_frontend]
     steps:
     - uses: actions/checkout@v1
     - name: Get minikube (macOS)
-      if: matrix.os == 'macos-11.0'
+      if: matrix.os == 'macos-latest'
       run: brew install minikube
     - name: Setup Minikube
       run: minikube start --addons=registry --addons=ingress
@@ -91,10 +91,12 @@ jobs:
         BROWSER=firefox yarn test
     - name: Safari Selenium tests
       shell: bash
-      if: matrix.os == 'macos-11.0'
+      if: matrix.os == 'macos-latest'
       run: |
         export BASE_URL="http://$(minikube ip)/"
         cd tests/selenium
+        sudo safaridriver --enable
+        safaridriver -p 0 &
         BROWSER=safari yarn test
     - name: Cleanup
       run: skaffold delete --profile=dev
