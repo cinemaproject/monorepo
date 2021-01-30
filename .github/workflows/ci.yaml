@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-latest, macos-11.0]
+        os: [ubuntu-20.04, macos-11.0]
     runs-on: ${{ matrix.os }}
     needs: [check_backend, check_frontend]
     steps:
@@ -76,21 +76,26 @@ jobs:
       run: skaffold build --profile=dev
     - name: Deploy containers to kubernetes
       run: skaffold run --profile=dev
+    - run: cd tests/selenium && yarn install
     - name: Chrome Selenium tests
       shell: bash
       run: |
         export BASE_URL="http://$(minikube ip)/"
         cd tests/selenium
-        npm install
-        BROWSER=chrome npm test
+        BROWSER=chrome yarn test
+    - name: Firefox Selenium tests
+      shell: bash
+      run: |
+        export BASE_URL="http://$(minikube ip)/"
+        cd tests/selenium
+        BROWSER=firefox yarn test
     - name: Safari Selenium tests
       shell: bash
       if: matrix.os == 'macos-11.0'
       run: |
         export BASE_URL="http://$(minikube ip)/"
         cd tests/selenium
-        npm install
-        BROWSER=safari npm test
+        BROWSER=safari yarn test
     - name: Cleanup
       run: skaffold delete --profile=dev
   push_docker:
