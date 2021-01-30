@@ -38,7 +38,6 @@ module.exports.createBrowser = async () => {
 
   try {
     instance = await new webdriver.Builder()
-      .forBrowser(browser)
       .withCapabilities(capabilities)
       .build();
   } catch (err) {
