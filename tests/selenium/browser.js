@@ -10,16 +10,8 @@ module.exports.createBrowser = async () => {
       var args = [
         "--headless",
         "--disable-gpu",
-        "--disable-setuid-sandbox",
-        "-remote-debugging-port=9222",
-        "-disable-extensions",
-        "--window-size=1980,1200"
+        "--disable-sndbox"
       ];
-
-      if (process.platform == "linux") {
-        args.push("--no-sandbox")
-        args.push("--disable-dev-shm-usage")
-      }
 
       capabilities.set("chromeOptions", {
         args: args
