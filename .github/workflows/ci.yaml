@@ -26,7 +26,7 @@ jobs:
         path: backend/backend.html
   check_frontend:
     name: "Check frontend"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 12.x
@@ -46,8 +46,75 @@ jobs:
     - run: cd frontend_new && npm test
   check_integration:
     name: "Check components integration"
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+    runs-on: ${{ matrix.os }}
     needs: [check_backend, check_frontend]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Get minikube (macOS)
+      if: matrix.os == 'macos-latest'
+      run: brew install minikube
+    - name: Get minikube (Windows)
+      if: matrix.os == 'windows-latest'
+      run: choco install minikube virtualbox
+    - name: Setup Minikube (Ubuntu)
+      if: matrix.os == 'ubuntu-20.04'
+      run: minikube start --addons=registry --addons=ingress
+    - name: Setup Minikube
+      run: minikube start --driver=virtualbox --addons=registry --addons=ingress
+      if: matrix.os != 'ubuntu-20.04'
+    - name: Get Skaffold (Linux)
+      if: matrix.os == 'ubuntu-20.04'
+      run: |
+        sudo apt install -yqq curl
+        curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
+        sudo install skaffold /usr/local/bin/
+        rm -f skaffold
+    - name: Get Skaffold (Windows)
+      if: matrix.os == 'windows-latest'
+      run: choco install skaffold
+    - name: Get Skaffold (macOS)
+      if: matrix.os == 'macos-latest'
+      run: brew install skaffold
+    - name: Build Images
+      run: skaffold build --profile=dev
+    - name: Deploy containers to kubernetes
+      run: skaffold run --profile=dev
+    - run: cd tests/selenium && yarn install
+    - name: Firefox Selenium tests
+      continue-on-error: true
+      shell: bash
+      if: matrix.os != 'macos-latest'
+      run: |
+        export BASE_URL="http://$(minikube ip)/"
+        cd tests/selenium
+        BROWSER=firefox yarn test
+    - name: Chrome Selenium tests
+      continue-on-error: true
+      shell: bash
+      run: |
+        export BASE_URL="http://$(minikube ip)/"
+        cd tests/selenium
+        BROWSER=chrome yarn test
+    - name: Safari Selenium tests
+      shell: bash
+      if: matrix.os == 'macos-latest'
+      run: |
+        export BASE_URL="http://$(minikube ip)/"
+        cd tests/selenium
+        sudo safaridriver --enable
+        safaridriver -p 0 &
+        BROWSER=safari yarn test
+    - name: Cleanup
+      run: skaffold delete --profile=dev
+  push_docker:
+    name: "Push docker images"
+    runs-on: ubuntu-latest
+    needs: [check_integration]
+    if: ${{ github.event_name == 'push' }}
     steps:
     - uses: actions/checkout@v1
     - name: Get Skaffold
@@ -57,11 +124,9 @@ jobs:
         sudo install skaffold /usr/local/bin/
         rm -f skaffold
     - name: Login to DockerHub
-      uses: docker/login-action@v1 
-      if: ${{ github.event_name == 'push' }}
+      uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Update Images
-      if: ${{ github.event_name == 'push' }}
       run: skaffold build --profile=prod
