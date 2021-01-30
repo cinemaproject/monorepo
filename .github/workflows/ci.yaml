@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-latest, macos-latest]
+        os: [macos-latest]
     runs-on: ${{ matrix.os }}
     needs: [check_backend, check_frontend]
     steps:
@@ -87,6 +87,7 @@ jobs:
     - name: Firefox Selenium tests
       continue-on-error: true
       shell: bash
+      if: matrix.os != 'macos-latest'
       run: |
         export BASE_URL="http://$(minikube ip)/"
         cd tests/selenium

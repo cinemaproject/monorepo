@@ -1,6 +1,9 @@
 const { createBrowser, base_url } = require('./browser');
 const { By, until } = require('selenium-webdriver');
 
+jest.retryTimes(3);
+jest.setTimeout(30 * 1000);
+
 let browser;
 beforeAll(async () => browser = await createBrowser());
 afterAll(async () => await browser.quit());
