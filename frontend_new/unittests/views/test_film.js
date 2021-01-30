@@ -10,5 +10,3 @@ describe('FilmView', function() {
     assert(text.includes("1"));
   });
 });
-
-
