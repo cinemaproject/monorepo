@@ -26,7 +26,7 @@ jobs:
         path: backend/backend.html
   check_frontend:
     name: "Check frontend"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 12.x
@@ -46,29 +46,48 @@ jobs:
     - run: cd frontend_new && npm test
   check_integration:
     name: "Check components integration"
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     needs: [check_backend, check_frontend]
     steps:
     - uses: actions/checkout@v1
-    - run: sudo apt-get install google-chrome-stable
     - name: Setup Minikube
       run: minikube start --addons=registry --addons=ingress
-    - name: Get Skaffold
+    - name: Get Skaffold (Linux)
+      if: matrix.os == 'ubuntu-20.04'
       run: |
         sudo apt install -yqq curl
         curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
         sudo install skaffold /usr/local/bin/
         rm -f skaffold
+    - name: Get Skaffold (Windows)
+      if: matrix.os == 'windows-latest'
+      run: choco install skaffold
+    - name: Get Skaffold (macOS)
+      if: matrix.os == 'windows-latest'
+      run: brew install skaffold
     - name: Build Images
       run: skaffold build --profile=dev
     - name: Deploy containers to kubernetes
       run: skaffold run --profile=dev
-    - name: Run Selenium integration tests
+    - name: Chrome Selenium tests
+      shell: bash
       run: |
         export BASE_URL="http://$(minikube ip)/"
         cd tests/selenium
         npm install
         BROWSER=chrome npm test
+    - name: Safari Selenium tests
+      shell: bash
+      if: matrix.os == 'macos-latest'
+      run: |
+        export BASE_URL="http://$(minikube ip)/"
+        cd tests/selenium
+        npm install
+        BROWSER=safari npm test
     - name: Cleanup
       run: skaffold delete --profile=dev
   push_docker:
