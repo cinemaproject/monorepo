@@ -2,6 +2,7 @@ import Backend from "./Backend.js";
 import Home from "./views/Home.js";
 import About from "./views/About.js";
 import Film from "./views/Film.js";
+import SearchResults from "./views/SearchResults.js";
 // @if DEBUG=true
 import SuccessBackendMock from './SuccessBackendMock.js'
 // @endif
@@ -29,7 +30,8 @@ const router = async () => {
     const routes = [
         { path: "#", view: Home },
         { path: "#/about", view: About },
-        { path: "#/film/:id", view: Film}
+        { path: "#/film/:id", view: Film },
+        { path: "#/search/:query", view: SearchResults }
     ];
 
     // Test each route for potential match
@@ -69,6 +71,12 @@ document.addEventListener("DOMContentLoaded", () => {
             navigateTo(e.target.href);
         }
     });
+
+    document.getElementById("global-search-btn").onclick = e => {
+        e.preventDefault();
+        navigateTo("/#/search/"
+            + document.getElementById("global-search-query").value);
+    }
 
     router();
 });

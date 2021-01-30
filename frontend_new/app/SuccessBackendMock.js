@@ -23,4 +23,19 @@ export default class SuccessBackendMock extends AbstractBackend {
       }]
     };
   }
+
+  async searchFilms(title) {
+    return [
+      {
+        "id": 1,
+        "title": "Sample Film",
+        "poster_url": "sample_url",
+        "type": "movie",
+        "start_year": 2019,
+        "end_year": 0,
+        "runtime_minutes": 100,
+        "imdb_id": "tt000000001"
+      }
+    ]
+  }
 }
