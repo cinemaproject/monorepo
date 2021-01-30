@@ -1,21 +1,31 @@
 package main
 
 import (
-	"github.com/cinematic/monorepo/backend/pkg"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/cinematic/monorepo/backend/pkg"
+
 	_ "github.com/jackc/pgx/stdlib"
+	"github.com/jmoiron/sqlx"
 )
 
 func main() {
 	dbURL := os.Getenv("BACKEND_DB_URL")
 
-	db, err := sqlx.Connect("pgx", dbURL)
-	if err != nil {
-		log.Fatalf("Failed to connect to db: %s", err)
+	var db *sqlx.DB
+	var err error
+
+	for true {
+		db, err = sqlx.Connect("pgx", dbURL)
+		if err == nil {
+			break
+		} else {
+			log.Printf("Failed to connect to db: %s", err)
+			time.Sleep(3*time.Second)
+		}
 	}
 
 	router := pkg.InitializeRouter(db)
