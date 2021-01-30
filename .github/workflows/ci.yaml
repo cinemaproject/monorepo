@@ -16,10 +16,11 @@ jobs:
     - uses: actions/setup-go@v2
       with:
         go-version: '^1.15.0'
+    - run: go get -u github.com/ory/go-acc
     - name: Test Backend
-      run: cd backend && go test -v -coverprofile=backend_coverage.out ./...
+      run: cd backend && go-acc ./... -- -v
     - name: Render coverage report
-      run: cd backend && go tool cover -html=backend_coverage.out -o backend.html
+      run: cd backend && go tool cover -html=coverage.txt -o backend.html
     - uses: actions/upload-artifact@v2
       with:
         name: backend_coverage
