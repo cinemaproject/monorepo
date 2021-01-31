@@ -1,18 +1,18 @@
-FROM clearlinux/python:3.8.2
+FROM clearlinux/golang:1.15 as builder
 
-RUN mkdir -p /workspace
-WORKDIR /workspace
+WORKDIR /build
 
-ADD app ./app
-ADD static ./static
-ADD templates ./templates
-COPY embeddings.pickle ./
-COPY keys_dict.json ./
-COPY requirements.txt ./
+COPY go.mod go.sum ./
+RUN go mod download
 
-RUN swupd bundle-add opencv-python
-RUN pip install --upgrade pip
-RUN pip install wheel numpy
-RUN pip install -r requirements.txt
+COPY . .
 
-CMD ["python", "/workspace/app/main.py"]
+RUN GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -a -v -o server ./cmd/server
+
+FROM clearlinux:latest
+
+WORKDIR /dist
+
+COPY --from=builder /build/server .
+
+CMD ["./server"]

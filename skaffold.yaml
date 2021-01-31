@@ -15,10 +15,17 @@ build:
     sync:
       infer:
       - 'app'
-      - 'static'
-      - 'templates'
-      - 'keys_dict.json'
       - 'requirements.txt'
+  # TODO enable once build time is reasonable
+  # - image: cinematic/model_server
+  #   context: model_server
+  #   docker:
+  #     dockerfile: Dockerfile
+  #   sync:
+  #     infer:
+  #     - 'app'
+  #     - 'keys_dict.json'
+  #     - 'requirements.txt'
   - image: cinematic/frontend
     context: frontend_new
 profiles:

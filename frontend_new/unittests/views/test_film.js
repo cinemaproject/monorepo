@@ -5,9 +5,9 @@ const assert = require('assert');
 
 describe('FilmView', function() {
   it('should contain film id', async function () {
-    const view = new Film(new SuccessBackendMock(), {"id": "t00000001"}, {});
+    const view = new Film(new SuccessBackendMock(), {"id": "1"}, {});
     const text = await view.getHtml();
-    assert(text.includes("t000000001"));
+    assert(text.includes("1"));
   });
 });
 

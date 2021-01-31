@@ -1,6 +1,4 @@
 import config
-from db import text_search, items
-from utils import resultproxy_to_dict
 import os
 from flask_cors import CORS, cross_origin
 import insightface
@@ -41,42 +39,6 @@ def url_to_image(url):
     image = np.asarray(bytearray(resp.read()), dtype="uint8")
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
     return image
-
-
-@app.route("/api/people/search")
-@cross_origin()
-def search_people():
-    name = request.args.get("name")
-    people = resultproxy_to_dict(text_search.get_people_by_name(name))
-    result = {"people": people}
-    return json.dumps(result)
-
-
-@app.route("/api/people/<id>")
-@cross_origin()
-def get_person(id):
-    person = resultproxy_to_dict(items.get_person_by_id(id))
-    films = resultproxy_to_dict(items.get_related_films(id))
-    result = {"person": person, "films": films}
-    return json.dumps(result)
-
-
-@app.route("/api/films/search")
-@cross_origin()
-def search_films():
-    title = request.args.get("title")
-    films = resultproxy_to_dict(text_search.get_films_by_title(title))
-    result = {"films": films}
-    return json.dumps(result)
-
-
-@app.route("/api/films/<id>")
-@cross_origin()
-def get_film_info(id):
-    film = resultproxy_to_dict(items.get_film_by_id(id))
-    people = resultproxy_to_dict(items.get_related_people(id))
-    result = {"film": film, "people": people}
-    return json.dumps(result)
 
 
 @app.route("/api/actors_recognition", methods=["POST"])

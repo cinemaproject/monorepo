@@ -2,11 +2,11 @@ CREATE TYPE relation_type AS ENUM ('actor', 'director', 'writer');
 
 create table relations
 (
-	film_id char(10) not null
+	film_id integer not null
 		constraint relations_films_id_fk
 			references films
 				on update cascade on delete restrict,
-	person_id char(14) not null
+	person_id integer not null
 		constraint relations_people_id_fk
 			references people
 				on update cascade on delete restrict,
