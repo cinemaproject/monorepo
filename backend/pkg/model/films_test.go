@@ -65,8 +65,8 @@ func TestFindFilmsByTitle(t *testing.T) {
 
 	noRows := mock.NewRows(DefaultFilmsRow)
 
-	mock.ExpectQuery("^SELECT (.+) FROM films WHERE (.+)$").WithArgs("Star").WillReturnRows(rows)
-	mock.ExpectQuery("^SELECT (.+) FROM films WHERE (.+)$").WithArgs("Avengers").WillReturnRows(noRows)
+	mock.ExpectQuery("^SELECT (.+) FROM films WHERE (.+)$").WithArgs("%star%").WillReturnRows(rows)
+	mock.ExpectQuery("^SELECT (.+) FROM films WHERE (.+)$").WithArgs("%avengers%").WillReturnRows(noRows)
 
 	// Act
 	films, err := FindFilmsByTitle(db, "Star")

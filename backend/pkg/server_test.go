@@ -51,20 +51,20 @@ func _getTestServer() (*httptest.Server, *sql.DB, error) {
 	mock.ExpectQuery("^SELECT (.+) FROM people WHERE id IN (.+)$").WithArgs(1).WillReturnRows(mock.NewRows(DefaultPeopleRow).AddRow(1, "John Doe", "", 1980, 0, "nm00001"))
 
 	// Find person by name
-	mock.ExpectQuery("^SELECT (.+) FROM people WHERE lower(.+)$").WithArgs("John").WillReturnRows(mock.NewRows(DefaultPeopleRow).AddRow(1, "John Doe", "", 1980, 0, "nm00001"))
+	mock.ExpectQuery("^SELECT (.+) FROM people WHERE lower(.+)$").WithArgs("%john%").WillReturnRows(mock.NewRows(DefaultPeopleRow).AddRow(1, "John Doe", "", 1980, 0, "nm00001"))
 
 	// Find person by missing name
-	mock.ExpectQuery("^SELECT (.+) FROM people WHERE lower(.+)$").WithArgs("Jack").WillReturnRows(mock.NewRows(DefaultPeopleRow))
+	mock.ExpectQuery("^SELECT (.+) FROM people WHERE lower(.+)$").WithArgs("%jack%").WillReturnRows(mock.NewRows(DefaultPeopleRow))
 
 	// Find films by title
-	mock.ExpectQuery("^SELECT (.+) FROM films WHERE lower(.+)$").WithArgs("Star").WillReturnRows(
+	mock.ExpectQuery("^SELECT (.+) FROM films WHERE lower(.+)$").WithArgs("%star%").WillReturnRows(
 		mock.NewRows(DefaultFilmsRow).
 			AddRow(1, "Star Wars Episode 1", "", "movie", 1980, 0, 100, "tt00001").
 			AddRow(2, "Star Wars Episode 2", "", "movie", 1980, 0, 100, "tt00001").
 			AddRow(3, "Star Trek", "", "movie", 1980, 0, 100, "tt00001"))
 
 	// Request film with missing ID
-	mock.ExpectQuery("^SELECT (.+) FROM films WHERE lower(.+)$").WithArgs("Avengers").WillReturnRows(mock.NewRows(DefaultFilmsRow))
+	mock.ExpectQuery("^SELECT (.+) FROM films WHERE lower(.+)$").WithArgs("%avengers%").WillReturnRows(mock.NewRows(DefaultFilmsRow))
 
 	router := InitializeRouter(db)
 	ts := httptest.NewServer(router)

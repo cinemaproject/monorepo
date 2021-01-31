@@ -61,8 +61,8 @@ func TestFindPeopleByName(t *testing.T) {
 
 	noRows := mock.NewRows(DefaultPeopleRow)
 
-	mock.ExpectQuery("^SELECT (.+) FROM people WHERE (.+)$").WithArgs("John").WillReturnRows(rows)
-	mock.ExpectQuery("^SELECT (.+) FROM people WHERE (.+)$").WithArgs("Jack").WillReturnRows(noRows)
+	mock.ExpectQuery("^SELECT (.+) FROM people WHERE (.+)$").WithArgs("%john%").WillReturnRows(rows)
+	mock.ExpectQuery("^SELECT (.+) FROM people WHERE (.+)$").WithArgs("%jack%").WillReturnRows(noRows)
 
 	// Act
 	people, err := FindPeopleByName(db, "John")

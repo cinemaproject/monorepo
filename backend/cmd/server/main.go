@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	dbURL := os.Getenv("BACKEND_DB_URL")
 
 	var db *sqlx.DB
