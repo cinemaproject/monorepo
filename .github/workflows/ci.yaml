@@ -55,6 +55,9 @@ jobs:
     needs: [check_backend, check_frontend]
     steps:
     - uses: actions/checkout@v1
+    - name: Get Firefox (macOS)
+      if: matrix.os == 'macos-latest'
+      run: brew install --cask firefox
     - name: Get minikube (macOS)
       if: matrix.os == 'macos-latest'
       run: brew install minikube
@@ -88,7 +91,6 @@ jobs:
     - name: Firefox Selenium tests
       continue-on-error: true
       shell: bash
-      if: matrix.os != 'macos-latest'
       run: |
         export BASE_URL="http://$(minikube ip)/"
         cd tests/selenium
