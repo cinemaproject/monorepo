@@ -4,6 +4,7 @@ const concatCss = require('gulp-concat-css');
 const copy = require('gulp-copy');
 const browserSync = require('browser-sync').create();
 const preprocess = require("gulp-preprocess");
+var gulp = require('gulp');
 
 function render_templates() {
   return src('views/**/*.js', { buffer: false })
@@ -47,6 +48,7 @@ function serve(cb) {
       baseDir: "./dist"
     }
   });
+  gulp.watch("./templates/**/*.html").on("change", browserSync.reload);
 }
 
 const cssPipeline = series(compile_css);
