@@ -1,2 +1,5 @@
 bases:
 - ../../base
+
+resources:
+- app_env.yaml

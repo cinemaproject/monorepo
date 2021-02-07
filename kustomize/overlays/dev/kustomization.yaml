@@ -1,7 +1,9 @@
 namespace: cinematic
 bases:
 - ../../base
+- ../../toydb
 
 resources:
 - secret.yaml
 - namespace.yaml
+- app_env.yaml

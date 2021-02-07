@@ -1,0 +1,3 @@
+resources:
+- toydb-deployment.yaml
+- toydb-service.yaml
