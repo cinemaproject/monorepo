@@ -91,14 +91,14 @@ jobs:
       run: skaffold run --profile=dev
     - run: cd tests/selenium && yarn install
     - name: Firefox Selenium tests
-      continue-on-error: true
+      if: always()
       shell: bash
       run: |
         export BASE_URL="http://$(minikube ip)/"
         cd tests/selenium
         BROWSER=firefox yarn test
     - name: Chrome Selenium tests
-      continue-on-error: true
+      if: always()
       shell: bash
       run: |
         export BASE_URL="http://$(minikube ip)/"
