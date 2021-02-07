@@ -16,15 +16,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var DefaultFilmsRow = []string{"id", "title", "poster_url", "type", "start_year", "end_year", "runtime_minutes", "imdb_id"}
+var DefaultFilmsRow = []string{"id", "title", "poster_url", "type", "start_year", "end_year", "runtime_minutes", "imdb_id", "descr", "album_id"}
 var DefaultPeopleRow = []string{"id", "primary_name", "photo_url", "birth_year", "death_year", "imdb_id"}
-
-const (
-	ExpectPersonById   = iota
-	ExpectPersonByName = iota
-	ExpectFilmsById    = iota
-	ExpectFilmsByTitle = iota
-)
 
 func _getTestServer() (*httptest.Server, *sql.DB, error) {
 	mockDB, mock, err := sqlmock.New()
@@ -41,13 +34,13 @@ func _getTestServer() (*httptest.Server, *sql.DB, error) {
 	// Request person with correct ID
 	mock.ExpectQuery("^SELECT (.+) FROM people WHERE id=(.+)$").WithArgs(1).WillReturnRows(mock.NewRows(
 		DefaultPeopleRow).AddRow(1, "John Doe", "", 1980, 0, "nm00001"))
-	mock.ExpectQuery("^SELECT (.+) FROM films WHERE id IN (.+)$").WithArgs(1).WillReturnRows(mock.NewRows(DefaultFilmsRow).AddRow(1, "Test", "", "movie", 2015, 0, 100, "tt00001"))
+	mock.ExpectQuery("^SELECT (.+) FROM films WHERE id IN (.+)$").WithArgs(1).WillReturnRows(mock.NewRows(DefaultFilmsRow).AddRow(1, "Test", "", "movie", 2015, 0, 100, "tt00001", "", ""))
 
 	// Request person with missing ID
 	mock.ExpectQuery("^SELECT (.+) FROM people WHERE id=(.+)$").WithArgs(2).WillReturnRows(mock.NewRows(DefaultPeopleRow))
 
 	// Request film with correct ID
-	mock.ExpectQuery("^SELECT (.+) FROM films WHERE id=(.+)$").WithArgs(1).WillReturnRows(mock.NewRows(DefaultFilmsRow).AddRow(1, "Test", "", "movie", 2015, 0, 100, "tt00001"))
+	mock.ExpectQuery("^SELECT (.+) FROM films WHERE id=(.+)$").WithArgs(1).WillReturnRows(mock.NewRows(DefaultFilmsRow).AddRow(1, "Test", "", "movie", 2015, 0, 100, "tt00001", "", ""))
 	mock.ExpectQuery("^SELECT (.+) FROM people WHERE id IN (.+)$").WithArgs(1).WillReturnRows(mock.NewRows(DefaultPeopleRow).AddRow(1, "John Doe", "", 1980, 0, "nm00001"))
 
 	// Find person by name
@@ -59,9 +52,9 @@ func _getTestServer() (*httptest.Server, *sql.DB, error) {
 	// Find films by title
 	mock.ExpectQuery("^SELECT (.+) FROM films WHERE lower(.+)$").WithArgs("%star%").WillReturnRows(
 		mock.NewRows(DefaultFilmsRow).
-			AddRow(1, "Star Wars Episode 1", "", "movie", 1980, 0, 100, "tt00001").
-			AddRow(2, "Star Wars Episode 2", "", "movie", 1980, 0, 100, "tt00001").
-			AddRow(3, "Star Trek", "", "movie", 1980, 0, 100, "tt00001"))
+			AddRow(1, "Star Wars Episode 1", "", "movie", 1980, 0, 100, "tt00001", "", "").
+			AddRow(2, "Star Wars Episode 2", "", "movie", 1980, 0, 100, "tt00001", "", "").
+			AddRow(3, "Star Trek", "", "movie", 1980, 0, 100, "tt00001", "", ""))
 
 	// Request film with missing ID
 	mock.ExpectQuery("^SELECT (.+) FROM films WHERE lower(.+)$").WithArgs("%avengers%").WillReturnRows(mock.NewRows(DefaultFilmsRow))
