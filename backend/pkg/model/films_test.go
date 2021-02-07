@@ -7,7 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var DefaultFilmsRow = []string{"id", "title", "poster_url", "type", "start_year", "end_year", "runtime_minutes", "imdb_id"}
+var DefaultFilmsRow = []string{"id", "title", "poster_url", "type", "start_year", "end_year", "runtime_minutes", "imdb_id", "descr", "album_id"}
 
 func TestGetFilmByID(t *testing.T) {
 	// Arrange
@@ -19,7 +19,7 @@ func TestGetFilmByID(t *testing.T) {
 
 	db := sqlx.NewDb(mockDB, "sqlmock")
 
-	row := mock.NewRows(DefaultFilmsRow).AddRow(1, "Test", "", "movie", 2015, 0, 100, "tt00001")
+	row := mock.NewRows(DefaultFilmsRow).AddRow(1, "Test", "", "movie", 2015, 0, 100, "tt00001", "", "")
 	noRows := mock.NewRows(DefaultFilmsRow)
 
 	mock.ExpectQuery("^SELECT (.+) FROM films WHERE id=(.+)$").WithArgs(1).WillReturnRows(row)
@@ -59,9 +59,9 @@ func TestFindFilmsByTitle(t *testing.T) {
 	db := sqlx.NewDb(mockDB, "sqlmock")
 
 	rows := mock.NewRows(DefaultFilmsRow).
-		AddRow(1, "Star Wars Episode 1", "", "movie", 1000, 0, 100, "tt00001").
-		AddRow(2, "Star Wars Episode 2", "", "movie", 1000, 0, 100, "tt00002").
-		AddRow(3, "Star Trek", "", "movie", 1000, 0, 100, "tt00003")
+		AddRow(1, "Star Wars Episode 1", "", "movie", 1000, 0, 100, "tt00001", "", "").
+		AddRow(2, "Star Wars Episode 2", "", "movie", 1000, 0, 100, "tt00002", "", "").
+		AddRow(3, "Star Trek", "", "movie", 1000, 0, 100, "tt00003", "", "")
 
 	noRows := mock.NewRows(DefaultFilmsRow)
 

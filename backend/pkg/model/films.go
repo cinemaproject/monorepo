@@ -16,6 +16,8 @@ type Film struct {
 	EndYear        int    `db:"end_year" json:"end_year"`
 	RuntimeMinutes int    `db:"runtime_minutes" json:"runtime_minutes"`
 	IMDBID         string `db:"imdb_id" json:"imdb_id"`
+	Description    string `db:"descr" json:"desc"`
+	AlbumID        string `db:"album_id" json:"album_id"`
 }
 
 func GetFilmByID(db *sqlx.DB, id int) (Film, error) {

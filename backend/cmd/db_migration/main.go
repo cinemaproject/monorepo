@@ -12,7 +12,7 @@ import (
 
 func insertStubData(db *sqlx.DB) {
 	tx := db.MustBegin()
-	tx.MustExec("INSERT INTO films VALUES (1, 'Sample Film', 'sample_url', 'movie', 2019, 0, 100, 't000000001');")
+	tx.MustExec("INSERT INTO films VALUES (1, 'Sample Film', 'sample_url', 'movie', 2019, 0, 100, 't000000001', 'Lorem ipsum dolor sit amet', '6284065');")
 	tx.MustExec("INSERT INTO people VALUES (1, 'John Doe', 'http://example.com', 1985, 0, 'nm000000000001');")
 	tx.MustExec("INSERT INTO relations VALUES (1, 1, 0);")
 	tx.Commit()
