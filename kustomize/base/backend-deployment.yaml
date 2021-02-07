@@ -12,6 +12,25 @@ spec:
       labels:
         app: backend
     spec:
+      initContainers:
+      - name: migrations
+        image: 'cinematic/db_migration'
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: "150m"
+            memory: "128Mi"
+        env:
+        - name: BACKEND_DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: backend-db-url
+              key: url
+        - name: BACKEND_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: app-env
+              key: stage
       containers:
       - name: backend
         image: 'cinematic/backend'
@@ -21,8 +40,6 @@ spec:
             cpu: "150m"
             memory: "128Mi"
         env:
-        - name: BACKEND_IMG_PATH
-          value: images # todo this must go to PVC
         - name: BACKEND_DB_URL
           valueFrom:
             secretKeyRef:

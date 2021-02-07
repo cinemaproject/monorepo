@@ -6,16 +6,14 @@ build:
   tagPolicy:
     gitCommit: {}
   artifacts:
-  - image: toydb
-    context: toydb
   - image: cinematic/backend
     context: backend
     docker:
-      dockerfile: Dockerfile
-    sync:
-      infer:
-      - 'app'
-      - 'requirements.txt'
+      dockerfile: Dockerfile.server
+  - image: cinematic/db_migration
+    context: backend
+    docker:
+      dockerfile: Dockerfile.db_migration
   # TODO enable once build time is reasonable
   # - image: cinematic/model_server
   #   context: model_server
@@ -36,9 +34,6 @@ profiles:
       kustomize:
         paths: ["kustomize/overlays/dev"]
   - name: prod
-    patches:
-    - op: remove
-      path: /build/artifacts/0
     deploy:
       kustomize:
         paths: ["kustomize/overlays/prod"]
