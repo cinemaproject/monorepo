@@ -33,3 +33,23 @@ body {
     width: 250px;
     height: 370px;
 }
+
+.metadata-label {
+    color: azure;
+    font-size: 0.8em;
+    font-style: oblique;
+}
+
+.metadata-text {
+    color: azure;
+    font-size: 0.8em;
+}
+
+.desc-text {
+    color: azure;
+    font-size: 1.2em;
+}
+
+.entity-title {
+    color: azure;
+}

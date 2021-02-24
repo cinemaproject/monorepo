@@ -11,7 +11,8 @@ export default class SuccessBackendMock extends AbstractBackend {
         "start_year": 2019,
         "end_year": 0,
         "runtime_minutes": 100,
-        "imdb_id": "tt000000001"
+        "imdb_id": "tt000000001",
+        "desc": "Lorem ipsum dolor sit amet..."
       },
       "people": [{
         "id": 1,
@@ -19,9 +20,24 @@ export default class SuccessBackendMock extends AbstractBackend {
         "photo_url": "http://example.com",
         "birth_year": 1985,
         "death_year": 0,
-        "imdb_id": "nm000000000001"
+        "imdb_id": "nm000000000001",
+        "bio": "Lorem ipsum dolor sit amet..."
       }]
     };
+  }
+
+  async getPerson(personId) {
+    return {
+      "person": {
+        "id": 1,
+        "primary_name": "John Doe",
+        "photo_url": "http://example.com",
+        "birth_year": 1985,
+        "death_year": 0,
+        "imdb_id": "nm000000000001",
+        "bio": "Lorem ipsum dolor sit amet..."
+      }
+    }
   }
 
   async searchFilms(title) {
@@ -34,7 +50,8 @@ export default class SuccessBackendMock extends AbstractBackend {
         "start_year": 2019,
         "end_year": 0,
         "runtime_minutes": 100,
-        "imdb_id": "tt000000001"
+        "imdb_id": "tt000000001",
+        "desc": "Lorem ipsum dolor sit amet..."
       }
     ]
   }
@@ -47,7 +64,8 @@ export default class SuccessBackendMock extends AbstractBackend {
         "photo_url": "http://example.com",
         "birth_year": 1985,
         "death_year": 0,
-        "imdb_id": "nm000000000001"
+        "imdb_id": "nm000000000001",
+        "bio": "Lorem ipsum dolor sit amet..."
       }
     ]
   }

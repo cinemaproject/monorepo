@@ -1,7 +1,27 @@
-<p id="film-id">
-  id: <%= parameters.film.id %>
-</p>
-
-<p id="film-title">
-  title: <%= parameters.film.title %>
-</p>
+<div style="width: 800px; margin-left: auto; margin-right: auto; padding-top: 40px; height: auto;">
+<table>
+  <tr>
+    <td style="width: 300px;">
+      <img src="<%= parameters.film.poster_url %>"/>
+    </td>
+    <td style="width: 500px;">
+      <h3 class="entity-title"><%= parameters.film.title %></h3>
+      <table>
+        <tr>
+          <td class="metadata-label">Year</td>
+          <td class="metadata-text"><%= parameters.years %></td>
+        </tr>
+        <tr>
+          <td class="metadata-label">Length</td>
+          <td class="metadata-text"><%= parameters.film.runtime_minutes %></td>
+        </tr>
+      </table>
+      <p class="desc-text">
+        <%= parameters.film.desc %>
+      </p>
+    </td>
+  </tr>
+</table>
+<h4 class="entity-title">Soundtracks</h4>
+<h4 class="entity-title">Related people</h4>
+</div>

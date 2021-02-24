@@ -2,6 +2,7 @@ import Backend from "./Backend.js";
 import Home from "./views/Home.js";
 import About from "./views/About.js";
 import Film from "./views/Film.js";
+import Person from "./views/Person.js";
 import SearchResults from "./views/SearchResults.js";
 // @if DEBUG=true
 import SuccessBackendMock from './SuccessBackendMock.js'
@@ -30,6 +31,7 @@ const router = async () => {
         { path: "#", view: Home },
         { path: "#/about", view: About },
         { path: "#/film/:id", view: Film },
+        { path: "#/person/:id", view: Person },
         { path: "#/search/:query", view: SearchResults }
     ];
 
@@ -81,3 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     router();
 });
+
+document.openCard = (href) => {
+    navigateTo(href);
+}
