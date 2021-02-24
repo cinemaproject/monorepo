@@ -1,0 +1,26 @@
+<div style="width: 800px; margin-left: auto; margin-right: auto; padding-top: 40px; height: auto;">
+<table>
+  <tr>
+    <td style="width: 300px;">
+      <img src="<%= parameters.person.photo_url %>"/>
+    </td>
+    <td style="width: 500px;">
+      <h3 class="entity-title"><%= parameters.person.primary_name %></h3>
+      <table>
+        <tr>
+          <td class="metadata-label">Birth year</td>
+          <td class="metadata-text"><%= parameters.person.birth_year %></td>
+        </tr>
+        <tr>
+          <td class="metadata-label">Death year</td>
+          <td class="metadata-text"><%= parameters.death_year %></td>
+        </tr>
+      </table>
+      <p class="desc-text">
+        <%= parameters.person.bio %>
+      </p>
+    </td>
+  </tr>
+</table>
+<h4 class="entity-title">Related films</h4>
+</div>
