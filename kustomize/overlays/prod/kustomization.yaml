@@ -3,3 +3,5 @@ bases:
 
 resources:
 - app_env.yaml
+- ingress.yaml
+- secret.yaml
