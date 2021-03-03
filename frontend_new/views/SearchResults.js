@@ -22,6 +22,7 @@ export default class SearchResults extends AbstractView {
         cards += cardTemplate({
           title: element.title,
           image_url: element.poster_url,
+          href: "/#/film/" + element.id,
           desc: "Lorem impsum dolor sit amet"
         }) + "\n";
       });
@@ -36,6 +37,7 @@ export default class SearchResults extends AbstractView {
         cards += cardTemplate({
           title: element.primary_name,
           image_url: element.photo_url,
+          href: "/#/person/" + element.id,
           desc: "Short actor bio"
         });
       });
