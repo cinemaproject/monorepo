@@ -31,7 +31,7 @@ app = Flask(__name__)
 @cross_origin()
 def images(path):
     print(path)
-    return send_file(os.path.join(config.images_dir, path), mimetype="image/JPG")
+    return send_file(safe_join(config.images_dir, path), mimetype="image/JPG")
 
 
 def url_to_image(url):
